@@ -13,11 +13,11 @@
 <body>
     <header>
         <nav>
-            <div class="navbar bg-base-200 rounded-xl p-4">
-                <div>
-                    <a class="btn btn-ghost text-xl" href="/posts">
+            <div class="navbar bg-base-200 rounded-xl p-4 flex flex-wrap items-center">
+                <div class="flex items-center">
+                    <a class="btn btn-ghost text-xl flex items-center" href="/posts">
                         <img src="https://static-00.iconduck.com/assets.00/laravel-icon-1990x2048-xawylrh0.png"
-                            class="h-10 w-10" alt="Laravel Icon">Laravel Crud</a>
+                            class="h-10 w-10 mr-2" alt="Laravel Icon">Laravel Crud</a>
                 </div>
                 <div class="dropdown">
                     <button tabindex="0" role="button" class="btn m-1">Themes</button>
@@ -30,13 +30,12 @@
                     </div>
                 </div>
             </div>
-
         </nav>
     </header>
     <main>
-        <div
-            class="flex flex-col justify-center items-center border-2 border-base-300 p-4 mx-4 md:mx-24 lg:mx-48 xl:mx-96">
-            {{ $slot }}</div>
+        <div class="flex flex-col justify-center items-center p-4">
+            {{ $slot }}
+        </div>
     </main>
 </body>
 
