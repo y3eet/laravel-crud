@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts', function () {
         return view('posts.index');
     })->name('posts.index');
-    Route::get('/user', function (Request $request) {
-        return $request->user();
+});
+Route::prefix('api')->group(function () {
+    Route::middleware('auth')->group(function () {
+        Route::post('/user', function (Request $request) {
+            return $request->user();
+        });
+        Route::apiResource('/posts', PostController::class)->names([
+            'index' => 'api.posts.index',
+            'store' => 'api.posts.store',
+            'show' => 'api.posts.show',
+            'update' => 'api.posts.update',
+            'destroy' => 'api.posts.destroy',
+        ]);
     });
 });
