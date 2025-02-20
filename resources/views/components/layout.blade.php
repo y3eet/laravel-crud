@@ -76,15 +76,30 @@
         "sunset",
     ]
     $(document).ready(function() {
-        var themeList = $('#theme-list');
-        themes.forEach(function(theme) {
-            themeList.append('<button class="btn bg-base-100" data-theme="' + theme + '">' + theme +
-                '</button>');
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'winter';
+        $('html').attr('data-theme', savedTheme);
+
+        // Populate theme list
+        const themeList = $('#theme-list');
+        themes.forEach(theme => {
+            const activeClass = theme === savedTheme ? 'btn-active' : '';
+            themeList.append(`
+                    <button class="btn bg-base-100 ${activeClass}" data-theme="${theme}">
+                        ${theme}
+                    </button>
+                `);
         });
 
+        // Handle theme selection
         themeList.on('click', 'button', function() {
-            var selectedTheme = $(this).data('theme');
+            const selectedTheme = $(this).data('theme');
             $('html').attr('data-theme', selectedTheme);
+            localStorage.setItem('theme', selectedTheme);
+
+            // Update active state
+            themeList.find('button').removeClass('btn-active');
+            $(this).addClass('btn-active');
         });
     });
 </script>
