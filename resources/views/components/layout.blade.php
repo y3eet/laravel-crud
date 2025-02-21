@@ -24,9 +24,9 @@
         'dracula',
         'cmyk',
     ];
-    $currentTheme = 'dracula';
+    $currentTheme = Auth::check() ? Auth::user()->theme : 'dracula';
 @endphp
-<html lang="en" data-theme="dracula">
+<html lang="en" data-theme="{{ $currentTheme }}">
 
 <head>
     <meta charset="UTF-8">
