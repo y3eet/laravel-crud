@@ -24,12 +24,12 @@ Route::middleware('auth')->group(function () {
         return view('posts.index');
     })->name('posts.index');
 });
-Route::prefix('api')->group(function () {
+Route::prefix('/api')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::post('/user', function (Request $request) {
             return $request->user();
         });
-        Route::apiResource('/posts', PostController::class)->names([
+        Route::resource('/posts', PostController::class)->names([
             'index' => 'api.posts.index',
             'store' => 'api.posts.store',
             'show' => 'api.posts.show',
