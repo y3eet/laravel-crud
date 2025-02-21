@@ -9,7 +9,7 @@
             </div>
 
             <div>
-                <h2 class="card-title">{{ $post->user->name }}</h2>
+                <h2 class="card-title text-accent">{{ $post->user->name }}</h2>
                 <p class="text-sm text-gray-500">Posted on {{ $post->created_at->format('F d, Y') }}</p>
             </div>
             @if ($post->user->id === Auth::user()->id)
@@ -90,7 +90,7 @@
 
         </div>
         <h2 class="card-title">{{ $post->title }}</h2>
-        <p>{{ $post->content }}</p>
+        <p>{{ Str::limit($post->content, 255) }}</p>
 
     </div>
     {{-- Image (Uncomment if needed) --}}
@@ -105,7 +105,7 @@
                 <x-heart-button :post-id="$post->id" />
             </div>
 
-            <a class="btn btn-primary">View</a>
+            <a class="btn btn-primary" href="/posts/{{ $post->id }}">View</a>
 
         </div>
     </div>
