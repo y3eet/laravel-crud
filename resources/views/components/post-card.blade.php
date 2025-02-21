@@ -14,9 +14,28 @@
             </div>
             @if ($post->user->id === Auth::user()->id)
                 <div class="ml-auto">
-                    <button data-post-id="{{ $post->id }}"
-                        class="btn btn-error btn-sm deleteModalBtn">Delete</button>
-                    <button data-post-id="{{ $post->id }}" class="btn btn-success btn-sm editModalBtn">Edit</button>
+                    <div class="dropdown dropdown-end">
+                        <div tabindex="0" role="button" class="btn btn-xs btn-ghost">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                            </svg>
+                        </div>
+
+                        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                            <li>
+                                <button data-post-id="{{ $post->id }}" class="editModalBtn text-green-500">
+                                    Edit
+                                </button>
+                            </li>
+                            <li>
+                                <button data-post-id="{{ $post->id }}" class="deleteModalBtn text-red-500">
+                                    Delete
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <div>
                     {{-- Edit Modal --}}
