@@ -23,18 +23,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts', function () {
         return view('posts.index');
     })->name('posts.index');
+    Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 });
 Route::prefix('/api')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::post('/user', function (Request $request) {
             return $request->user();
         });
-        Route::resource('/posts', PostController::class)->names([
-            'index' => 'api.posts.index',
-            'store' => 'api.posts.store',
-            'show' => 'api.posts.show',
-            'update' => 'api.posts.update',
-            'destroy' => 'api.posts.destroy',
-        ]);
+        Route::post('/user/theme', [AuthController::class, 'setTheme']);
+
+        Route::get('/posts', [PostController::class, 'index'])->name('api.posts.index');
+        Route::post('/posts', [PostController::class, 'store'])->name('api.posts.store');
+        Route::put('/posts/{post}', [PostController::class, 'update'])->name('api.posts.update');
+        Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('api.posts.destroy');
     });
 });
