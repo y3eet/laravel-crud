@@ -23,6 +23,16 @@
         'luxury',
         'dracula',
         'cmyk',
+        'autumn',
+        'business',
+        'acid',
+        'lemonade',
+        'night',
+        'coffee',
+        'winter',
+        'dim',
+        'nord',
+        'sunset',
     ];
     $currentTheme = Auth::check() ? Auth::user()->theme : 'dracula';
 @endphp
@@ -55,8 +65,7 @@
                             <h3 class="card-title">Themes</h3>
                             <div class="flex flex-col gap-2 max-h-96 overflow-auto">
                                 @foreach ($themes as $theme)
-                                    <button class="btn bg-base-100 {{ $theme === $currentTheme ? 'btn-active' : '' }}"
-                                        data-theme="{{ $theme }}">
+                                    <button class="themeBtn btn bg-base-100" data-theme="{{ $theme }}">
                                         {{ $theme }}
                                     </button>
                                 @endforeach
@@ -100,68 +109,45 @@
         </div>
     </main>
 </body>
-{{-- <script>
-    var themes = [
-        "light",
-        "dark",
-        "cupcake",
-        "bumblebee",
-        "emerald",
-        "corporate",
-        "synthwave",
-        "retro",
-        "cyberpunk",
-        "valentine",
-        "halloween",
-        "garden",
-        "forest",
-        "aqua",
-        "lofi",
-        "pastel",
-        "fantasy",
-        "wireframe",
-        "black",
-        "luxury",
-        "dracula",
-        "cmyk",
-        "autumn",
-        "business",
-        "acid",
-        "lemonade",
-        "night",
-        "coffee",
-        "winter",
-        "dim",
-        "nord",
-        "sunset",
-    ]
+<script>
     $(document).ready(function() {
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'winter';
-        $('html').attr('data-theme', savedTheme);
-
-        // Populate theme list
-        const themeList = $('#theme-list');
-        themes.forEach(theme => {
-            const activeClass = theme === savedTheme ? 'btn-active' : '';
-            themeList.append(`
-                    <button class="btn bg-base-100 ${activeClass}" data-theme="${theme}">
-                        ${theme}
-                    </button>
-                `);
-        });
-
-        // Handle theme selection
-        themeList.on('click', 'button', function() {
+        $('.themeBtn').on('click', function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
             const selectedTheme = $(this).data('theme');
-            $('html').attr('data-theme', selectedTheme);
-            localStorage.setItem('theme', selectedTheme);
 
-            // Update active state
-            themeList.find('button').removeClass('btn-active');
-            $(this).addClass('btn-active');
+            $('html').attr('data-theme', selectedTheme);
+            $.ajax({
+                url: '/api/user/theme',
+                type: 'POST',
+                data: {
+                    theme: selectedTheme,
+                },
+                success: function(response) {
+                    console.log(response)
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    console.log(xhr.responseText);
+                }
+            });
         });
+
+
+        // // Handle theme selection
+        // themeList.on('click', 'button', function() {
+        //     const selectedTheme = $(this).data('theme');
+        //     $('html').attr('data-theme', selectedTheme);
+        //     localStorage.setItem('theme', selectedTheme);
+
+        //     // Update active state
+        //     themeList.find('button').removeClass('btn-active');
+        //     $(this).addClass('btn-active');
+        // });
     });
-</script> --}}
+</script>
 
 </html>
