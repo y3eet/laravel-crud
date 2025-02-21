@@ -40,13 +40,12 @@
                 $.ajax({
                     url: '/api/posts',
                     type: 'GET',
-
                     success: function(response) {
                         $('#posts').html(response)
-
                     },
                     error: function(xhr, status, error) {
                         console.error('Error:', error);
+                        console.log(xhr.responseText);
                     }
                 });
             }
@@ -63,10 +62,12 @@
             loadPosts()
             $("#createPostForm").on('submit', function(e) {
                 e.preventDefault();
+                console.log("add")
                 $.ajax({
                     url: '/api/posts',
                     type: 'POST',
-                    data: $('#createPostForm').serialize(),
+                    data: $(this).serialize(),
+
                     success: function(response) {
                         loadPosts();
                         const modal = $('#postModal')[0];
@@ -74,6 +75,7 @@
                     },
                     error: function(xhr, status, error) {
                         console.error('Error:', error);
+                        alert('Error:', error);
                     }
                 });
             });

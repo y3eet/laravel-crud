@@ -1,5 +1,5 @@
 @props(['post'])
-<div class="mx-auto card bg-base-100 shadow-xl mb-3" style="max-width: 900px; width: 100vw">
+<div id="post_{{ $post->id }}" class="mx-auto card bg-base-100 shadow-xl mb-3" style="max-width: 900px; width: 100vw">
     <div class="card-body flex flex-col gap-3">
         <div class="flex gap-3">
             <div class="avatar placeholder">
@@ -7,38 +7,160 @@
                     <span>{{ strtoupper(substr($post->user->name, 0, 2)) }}</span>
                 </div>
             </div>
+
             <div>
                 <h2 class="card-title">{{ $post->user->name }}</h2>
                 <p class="text-sm text-gray-500">Posted on {{ $post->created_at->format('F d, Y') }}</p>
             </div>
+            @if ($post->user->id === Auth::user()->id)
+                <div class="ml-auto">
+                    <button data-post-id="{{ $post->id }}"
+                        class="btn btn-error btn-sm deleteModalBtn">Delete</button>
+                    <button data-post-id="{{ $post->id }}" class="btn btn-success btn-sm editModalBtn">Edit</button>
+                </div>
+                <div>
+                    {{-- Edit Modal --}}
+                    <dialog id="editPostModal_{{ $post->id }}" class="modal">
+                        <div class="modal-box p-14">
+                            <h2 class="card-title mb-5">Edit a Post</h2><span>Post ID: {{ $post->id }}</span>
+                            <div class="max-w-2xl mx-auto">
+                                <form id="editPostForm_{{ $post->id }}" method="POST"
+                                    data-post-id="{{ $post->id }}">
+                                    @csrf
+                                    <div class="mb-4">
+                                        <label for="title" class="label">
+                                            <span class="label-text">Title</span>
+                                        </label>
+                                        <input data-post-id="{{ $post->id }}" type="text" name="title"
+                                            id="title" value="{{ $post->title }}"
+                                            class="input input-bordered w-full" required>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="content" class="label">
+                                            <span class="label-text">Content</span>
+                                        </label>
+                                        <textarea name="content" id="content" rows="4" class="textarea textarea-bordered w-full" required>{{ $post->content }}</textarea>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary w-full">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                        <form method="dialog" class="modal-backdrop">
+                            <button>close</button>
+                        </form>
+                    </dialog>
+                    {{-- Delete Modal --}}
+                    <dialog id="deletePostModal_{{ $post->id }}" class="modal">
+                        <div class="modal-box p-8">
+                            <h2 class="card-title mb-5">Delete Post</h2>
+                            <span>Post ID: {{ $post->id }}</span>
+                            <p>Are you sure you want to delete this post?</p>
+                            <div class="flex mt-10 justify-end">
+                                <button data-post-id="{{ $post->id }}" type="submit"
+                                    class="btn btn-error deletePostBtn">Delete</button>
+                            </div>
+                        </div>
+                        <form method="dialog" class="modal-backdrop">
+                            <button>close</button>
+                        </form>
+                    </dialog>
+                </div>
+            @endif
+
         </div>
         <h2 class="card-title">{{ $post->title }}</h2>
         <p>{{ $post->content }}</p>
+
     </div>
     {{-- Image (Uncomment if needed) --}}
     {{-- <figure>
         <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Post Image" />
     </figure> --}}
+
+
     <div class="card-body flex flex-col gap-3">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <button class="btn btn-outline btn-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                </button>
-                <span>10 likes</span>
+                <x-heart-button :post-id="$post->id" />
             </div>
-            <button class="btn btn-outline btn-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                    class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 8h2a2 2 0 012 2v10a2 2 0 01-2 2h-6a2 2 0 01-2-2v-2m-4 4h6m-6-4h6m-6-4h6m-6-4h6m-6-4h6m-6-4h6m-6-4h6" />
-                </svg>
-                <span>Share</span>
-            </button>
+
+            <a class="btn btn-primary">View</a>
+
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        function loadPosts() {
+            $.ajax({
+                url: '/api/posts',
+                type: 'GET',
+                success: function(response) {
+                    $('#posts').html(response)
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $(document).off('click', '.deleteModalBtn').on('click', '.deleteModalBtn', function() {
+            const postId = $(this).data('post-id');
+            const modal = $(`#deletePostModal_${postId}`)[0];
+            modal.showModal();
+        });
+        $(document).off('click', '.deletePostBtn').on('click', '.deletePostBtn', function() {
+            const postId = $(this).data('post-id');
+            $.ajax({
+                url: `/api/posts/${postId}`,
+                type: 'DELETE',
+                success: function(response) {
+                    console.log(response);
+                    const modal = $(`#deletePostModal_${postId}`)[0]
+                    modal.close();
+                    $(`#post_${postId}`).hide();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $(document).off('click', '.editModalBtn').on('click', '.editModalBtn', function() {
+            const postId = $(this).data('post-id');
+            const modal = $(`#editPostModal_${postId}`)[0];
+            modal.showModal();
+        });
+        $(document).off('submit', "form[id^='editPostForm_']").on('submit', "form[id^='editPostForm_']",
+            function(e) {
+                e.preventDefault();
+                const postId = $(this).data('post-id');
+                $.ajax({
+                    url: `/api/posts/${postId}`,
+                    type: 'PUT',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        console.log(response);
+                        const modal = $(`#editPostModal_${postId}`)[0];
+                        modal.close();
+                        loadPosts();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('Error:', error);
+                    }
+                });
+            });
+
+    });
+</script>

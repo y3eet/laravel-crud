@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource. GET
      */
     public function index(Request $request)
     {
@@ -25,7 +25,7 @@ class PostController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage. POST
      */
     public function store(Request $request)
     {
@@ -59,18 +59,35 @@ class PostController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage. UPDATE
      */
     public function update(Request $request, string $id)
     {
         //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
+        $post = Post::findOrFail($id);
+        $post->update($validated);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Updated Post Scuccessfully',
+            'post' => $post,
+        ]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage. DELETE
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+        $post->delete();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Deleted Post Scuccessfully',
+            'post' => $post,
+        ]);
     }
 }
