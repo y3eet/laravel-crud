@@ -33,12 +33,12 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
         ]);
-        $post = Post::create([
+        $post = Post::with('user')->create([
             'title' => $request->title,
             'content' => $request->content,
             'user_id' => $request->user()->id,
         ]);
-        $post->load('user');
+
         return response()->json($post);
     }
 
@@ -83,8 +83,7 @@ class PostController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $post = Post::findOrFail($id);
-        $post->delete();
+        $post = Post::findOrFail($id)->delete();
         return response()->json([
             'status' => 'success',
             'message' => 'Deleted Post Scuccessfully',
