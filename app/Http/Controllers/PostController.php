@@ -12,8 +12,16 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $posts = Post::with('user')->orderBy('updated_at', 'desc')->get();
+        $userId = $request->user()->id;
+        $posts = Post::with('user')
+            ->withCount('likes')
+            ->orderBy('updated_at', 'desc')
+            ->withExists(['likes as liked' => function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            }])
+            ->get();
         return view('components.load-post', ['posts' => $posts]);
+        // return response()->json($posts);
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,9 @@ Route::prefix('/api')->group(function () {
             return $request->user();
         });
         Route::post('/user/theme', [AuthController::class, 'setTheme']);
+
+        Route::put('/like/{post}', [LikeController::class, 'like']);
+        Route::delete('/like/{post}', [LikeController::class, 'unlike']);
 
         Route::get('/posts', [PostController::class, 'index'])->name('api.posts.index');
         Route::post('/posts', [PostController::class, 'store'])->name('api.posts.store');

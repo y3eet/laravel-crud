@@ -7,10 +7,9 @@ use Illuminate\Http\Request;
 
 class LikeController extends Controller
 {
-    public function index() {}
-    public function store(Request $request)
+    public function like(Request $request, string $id)
     {
-        $postId = $request->input('postId');
+        $postId = $id;
         $userId = $request->user()->id;
         Likes::firstOrCreate([
             'post_id' => $postId,
@@ -21,7 +20,7 @@ class LikeController extends Controller
             'message' => 'Liked Post Scuccessfully',
         ]);
     }
-    public function destroy(Request $request, string $id)
+    public function unlike(Request $request, string $id)
     {
         $userId = $request->user()->id;
         Likes::where('user_id', $userId)

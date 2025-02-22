@@ -102,7 +102,7 @@
     <div class="card-body flex flex-col gap-3">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <x-heart-button :post-id="$post->id" />
+                <x-heart-button :post-id="$post->id" count="{{ $post->likes_count }}" filled="{{ $post->liked }}" />
             </div>
 
             <a class="btn btn-primary" href="/posts/{{ $post->id }}">View</a>
