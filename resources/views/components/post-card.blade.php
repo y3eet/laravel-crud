@@ -89,8 +89,8 @@
             @endif
 
         </div>
-        <h2 class="card-title">{{ $post->title }}</h2>
-        <p>{{ Str::limit($post->content, 255) }}</p>
+        <h2 class="card-title" id="title_{{ $post->id }}">{{ $post->title }}</h2>
+            <p  id="content_{{ $post->id }}">{{ $post->content }}</p>
 
     </div>
     {{-- Image (Uncomment if needed) --}}
@@ -102,7 +102,7 @@
     <div class="card-body flex flex-col gap-3">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <x-heart-button :post-id="$post->id" count="{{ $post->likes_count }}" filled="{{ $post->liked }}" />
+                <x-heart-button post-id="{{ $post->id }}" count="{{ $post->likes_count }}" filled="{{ $post->liked }}" />
             </div>
 
             <a class="btn btn-primary" href="/posts/{{ $post->id }}">View</a>
@@ -113,6 +113,14 @@
 
 <script>
     $(document).ready(function() {
+        function toast (message, variant, time = 3000){
+            $('#toast').removeClass('hidden');
+            $('#toastMessage').text(message)
+            $('#toastVariant').addClass('alert-'+variant)
+            setTimeout(function() {
+                $('.toast').addClass('hidden');
+            }, time);
+}
         function loadPosts() {
             $.ajax({
                 url: '/api/posts',
@@ -147,10 +155,12 @@
                     const modal = $(`#deletePostModal_${postId}`)[0]
                     modal.close();
                     $(`#post_${postId}`).hide();
+                    toast(response.message, 'success')
                 },
                 error: function(xhr, status, error) {
                     console.error('Error:', error);
                     console.log(xhr.responseText);
+                    toast(response.message, 'error')
                 }
             });
         });
@@ -169,10 +179,14 @@
                     type: 'PUT',
                     data: $(this).serialize(),
                     success: function(response) {
-                        console.log(response);
                         const modal = $(`#editPostModal_${postId}`)[0];
+                        const responsePostId = response.post.id;
+                        const title = response.post.title;
+                        const content = response.post.content;
+                        $(`#title_${responsePostId}`).text(title);
+                        $(`#content_${responsePostId}`).text(content);
                         modal.close();
-                        loadPosts();
+                        toast(response.message, 'success')
                     },
                     error: function(xhr, status, error) {
                         console.error('Error:', error);
