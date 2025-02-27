@@ -53,10 +53,20 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
-        $post = Post::with('user')->findOrFail($id);
+        $userId = $request->user()->id;
+        $post = Post::with('user')
+            ->where('id', $id)
+            ->withCount('likes')
+            ->orderBy('updated_at', 'desc')
+            ->withExists(['likes as liked' => function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            }])->first();
+        //$post = Post::with('user')->findOrFail($id);
+        
         return view('posts.post', ['post' => $post]);
+        //return response()->json([$post]);
     }
 
     /**
