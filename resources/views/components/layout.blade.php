@@ -104,6 +104,11 @@
         </nav>
     </header>
     <main>
+        <div id="toast" class="toast toast-top toast-end hidden">
+            <div id="toastVariant" class="alert">
+              <span id="toastMessage"></span>
+            </div>
+        </div>
         <div class="flex flex-col justify-center items-center p-4">
             {{ $slot }}
         </div>
