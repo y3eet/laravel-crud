@@ -223,6 +223,7 @@
                         }
                     });
                 });
+            //Comment Section
             $(document).off('submit', "form[id^='commentForm']").on('submit', "form[id^='commentForm']",
                 function(e) {
                     const formData = $(this).serialize();
@@ -233,6 +234,35 @@
                         data: $(this).serialize(),
                         success: function(response) {
                             $('#comment_modal').get(0).close();
+                            loadComments()
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            alert('Error:', error);
+                        }
+                    });
+                });
+
+            $(document).off('click', '.replyBtn').on('click', '.replyBtn', function() {
+                const commentId = $(this).data('comment-id');
+                const modal = $(`#replyCommentModal_${commentId}`)[0];
+                modal.showModal();
+
+            });
+            $(document).off('submit', "form[id^='replyForm_']").on('submit', "form[id^='replyForm_']",
+                function(e) {
+                    const formData = $(this).serialize();
+                    const formDataObj = new URLSearchParams(formData);
+                    const commentId = formDataObj.get('parentId');
+                    const modal = $(`#replyCommentModal_${commentId}`)[0];
+                    e.preventDefault();
+                    modal.close()
+                    $.ajax({
+                        url: `/api/comment`,
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            modal.close()
                             loadComments()
                         },
                         error: function(xhr, status, error) {

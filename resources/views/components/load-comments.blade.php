@@ -2,7 +2,7 @@
     <x-comment-card :comment="$comment">
         @if ($comment->children->isNotEmpty())
             <div class="replies">
-                <x-comment-card :comment="$comment"></x-comment-card>
+                <x-load-comments :comments="$comment->children"></x-load-comments>
             </div>
         @endif
     </x-comment-card>
