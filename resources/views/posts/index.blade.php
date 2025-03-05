@@ -2,7 +2,7 @@
     <div id="posts">
 
     </div>
-    <button class="btn fixed bottom-4 right-4" id="postModalBtn">Post</button>
+    <button class="btn fixed bottom-4 right-4 btn-primary" id="postModalBtn">Post</button>
     <dialog id="postModal" class="modal">
         <div class="modal-box p-14">
             <div class="max-w-2xl mx-auto">
