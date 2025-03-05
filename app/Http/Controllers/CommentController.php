@@ -7,7 +7,16 @@ use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    public function index() {}
+    public function index(Request $request) 
+    {
+        $comments = Comment::whereNull('parent_id')
+        ->where('post_id', $request->postId)
+        ->with('user')
+        ->with('children')
+        ->get();
+        return view('components.load-comments', ['comments' => $comments]);
+        //return response()->json([$request->postId]);
+    }
     public function store(Request $request)
     {
         $request->validate([

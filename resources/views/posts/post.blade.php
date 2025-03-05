@@ -1,6 +1,7 @@
 <x-layout>
     <div id="post_{{ $post->id }}" class="mx-auto card bg-base-100 shadow-xl mb-3"
         style="max-width: 900px; width: 100vw">
+        <input type="hidden" value="{{ $post->id }}" id="postId">
         <div class="card-body flex flex-col gap-3">
             <div class="flex gap-3">
                 <div class="avatar placeholder">
@@ -130,7 +131,9 @@
         </div>
 
     </div>
-    <x-comment-card user="Mike" date="March 3, 2025" content="Another nested reply inside Jane's comment." />
+    <div class="mt-5" id="commentSection">
+        <span class="loading loading-infinity loading-lg"></span>
+    </div>
 
     <script>
         $(document).ready(function() {
@@ -144,19 +147,24 @@
                 }, time);
             }
 
-            function loadPosts() {
+            function loadComments() {
                 $.ajax({
-                    url: '/api/posts',
+                    url: `/api/comment`,
                     type: 'GET',
+                    data: {
+                        postId: Number($("#postId").val())
+                    },
                     success: function(response) {
-                        $('#posts').html(response)
+                        $('#commentSection').html(response)
                     },
                     error: function(xhr, status, error) {
                         console.error('Error:', error);
-                        console.log(xhr.responseText);
+                        alert('Error:', error);
                     }
                 });
             }
+            loadComments()
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -224,7 +232,8 @@
                         type: 'POST',
                         data: $(this).serialize(),
                         success: function(response) {
-                            console.log(response)
+                            $('#comment_modal').get(0).close();
+                            loadComments()
                         },
                         error: function(xhr, status, error) {
                             console.error('Error:', error);
@@ -232,6 +241,8 @@
                         }
                     });
                 });
+
+
         });
     </script>
 </x-layout>
