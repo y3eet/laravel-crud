@@ -92,10 +92,9 @@
 
             </div>
             <h2 class="card-title" id="title_{{ $post->id }}">{{ $post->title }}</h2>
-            <p  id="content_{{ $post->id }}">{{ $post->content }}</p>
+            <p id="content_{{ $post->id }}">{{ $post->content }}</p>
 
         </div>
-        {{-- Image (Uncomment if needed) --}}
         {{-- <figure>
             <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Post Image" />
         </figure> --}}
@@ -104,23 +103,47 @@
         <div class="card-body flex flex-col gap-3">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                    <x-heart-button post-id="{{ $post->id }}" count="{{ $post->likes_count }}" filled="{{ $post->liked }}" />
+                    <x-heart-button post-id="{{ $post->id }}" count="{{ $post->likes_count }}"
+                        filled="{{ $post->liked }}" />
+                    <button onclick="comment_modal.showModal()" class="btn btn-sm ml-5">Comment</button>
+
+                    <dialog class="modal" id="comment_modal">
+                        <div class="modal-box p-8">
+                            <h2 class="card-title mb-5">Comment</h2>
+                            <div class="max-w-2xl mx-auto">
+                                <form id="commentForm">
+                                    @csrf
+                                    <div class="mb-4">
+                                        <input type="hidden" name="postId" value="{{ $post->id }}">
+                                        <textarea name="body" id="comment" rows="3" class="textarea textarea-bordered w-full" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-full">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                        <form method="dialog" class="modal-backdrop">
+                            <button>close</button>
+                        </form>
+                    </dialog>
                 </div>
             </div>
         </div>
+
     </div>
+    <x-comment-card user="Mike" date="March 3, 2025" content="Another nested reply inside Jane's comment." />
 
     <script>
         $(document).ready(function() {
-            
-            function toast (message, variant, time = 3000){
+
+            function toast(message, variant, time = 3000) {
                 $('#toast').removeClass('hidden');
                 $('#toastMessage').text(message)
-                $('#toastVariant').addClass('alert-'+variant)
+                $('#toastVariant').addClass('alert-' + variant)
                 setTimeout(function() {
                     $('.toast').addClass('hidden');
                 }, time);
             }
+
             function loadPosts() {
                 $.ajax({
                     url: '/api/posts',
@@ -163,7 +186,6 @@
                     }
                 });
             });
-
             $(document).off('click', '.editModalBtn').on('click', '.editModalBtn', function() {
                 const postId = $(this).data('post-id');
                 const modal = $(`#editPostModal_${postId}`)[0];
@@ -193,7 +215,23 @@
                         }
                     });
                 });
-
+            $(document).off('submit', "form[id^='commentForm']").on('submit', "form[id^='commentForm']",
+                function(e) {
+                    const formData = $(this).serialize();
+                    e.preventDefault();
+                    $.ajax({
+                        url: `/api/comment`,
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            console.log(response)
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            alert('Error:', error);
+                        }
+                    });
+                });
         });
     </script>
 </x-layout>
