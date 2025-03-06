@@ -32,7 +32,8 @@
                                 <ul tabindex="0"
                                     class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                                     <li>
-                                        <button class="editCommentModalBtn text-green-500">
+                                        <button data-comment-id="{{ $comment->id }}"
+                                            class="editCommentModalBtn text-green-500">
                                             Edit
                                         </button>
                                     </li>
@@ -60,6 +61,25 @@
                                         <button>close</button>
                                     </form>
                                 </dialog>
+                                {{-- Edit Comment Modal --}}
+                                <dialog id="editCommentModal_{{ $comment->id }}" class="modal">
+                                    <div class="modal-box p-8">
+                                        <h2 class="card-title mb-5">Edit Comment</h2>
+                                        <div class="max-w-2xl mx-auto">
+                                            <form id="editCommentForm_{{ $comment->id }}">
+                                                @csrf
+                                                <div class="mb-4">
+                                                    <input type="hidden" name="commentId" value="{{ $comment->id }}">
+                                                    <textarea name="body" rows="3" class="textarea textarea-bordered w-full" required>{{ $comment->body }}</textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary w-full">Submit</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <form method="dialog" class="modal-backdrop">
+                                        <button>close</button>
+                                    </form>
+                                </dialog>
                             </div>
                         </div>
                     @endif
@@ -67,8 +87,8 @@
                 </div>
                 <p>{{ $comment->body }}</p>
                 <div>
-                    <button id="replyBtn" data-post-id="{{ $comment->post_id }}" data-comment-id="{{ $comment->id }}"
-                        class="replyBtn btn btn-sm">Reply</button>
+                    <button id="replyBtn" data-post-id="{{ $comment->post_id }}"
+                        data-comment-id="{{ $comment->id }}" class="replyBtn btn btn-sm">Reply</button>
                     <dialog id="replyCommentModal_{{ $comment->id }}" class="modal">
                         <div class="modal-box">
                             <form id="replyForm_{{ $comment->id }}" method="POST"">

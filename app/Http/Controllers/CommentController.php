@@ -20,7 +20,7 @@ class CommentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'body' => 'required|string|max:255',
+            'body' => 'required|string|max:1000',
         ]); 
         Comment::create([
             'user_id' => $request->user()->id,
@@ -32,6 +32,20 @@ class CommentController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Commented Scuccessfully',
+        ]);
+    }
+    public function update (Request $request, string $id)
+    {
+        $request->validate([
+            'body' => 'required|string|max:1000',
+        ]); 
+        $userId = $request->user()->id;
+        Comment::where('user_id', $userId)->where('id', $id)->update([
+            'body' => $request->body,
+        ]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Updated Comment Scuccessfully',
         ]);
     }
     public function delete (Request $request, string $id)

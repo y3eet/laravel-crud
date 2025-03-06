@@ -271,6 +271,34 @@
                         }
                     });
                 });
+            //Edit Modal
+            $(document).off('click', '.editCommentModalBtn').on('click', '.editCommentModalBtn', function() {
+                const commentId = $(this).data('comment-id');
+                const modal = $(`#editCommentModal_${commentId}`)[0];
+                modal.showModal();
+            });
+            //Submit Updated Comment
+            $(document).off('submit', "form[id^='editCommentForm_']").on('submit', "form[id^='editCommentForm_']",
+                function(e) {
+                    e.preventDefault();
+                    const formData = $(this).serialize();
+                    const formDataObj = new URLSearchParams(formData);
+                    const commentId = formDataObj.get('commentId');
+                    const modal = $(`#editCommentModal_${commentId}`)[0];
+                    $.ajax({
+                        url: `/api/comment/${commentId}`,
+                        type: 'PUT',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            modal.close()
+                            loadComments()
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            alert('Error:', error);
+                        }
+                    });
+                });
             // Delete Modal
             $(document).off('click', '.deleteCommentModalBtn').on('click', '.deleteCommentModalBtn', function() {
                 const commentId = $(this).data('comment-id');

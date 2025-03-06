@@ -39,6 +39,7 @@ Route::prefix('/api')->group(function () {
 
         Route::get('/comment', [CommentController::class, 'index']);
         Route::post('/comment', [CommentController::class, 'store']);
+        Route::put('comment/{id}', [CommentController::class, 'update']);
         Route::delete('/comment/{id}', [CommentController::class, 'delete']);
 
         Route::get('/posts', [PostController::class, 'index'])->name('api.posts.index');
