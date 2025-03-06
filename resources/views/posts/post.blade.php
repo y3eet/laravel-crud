@@ -223,7 +223,7 @@
                         }
                     });
                 });
-            //Comment Section
+            //Submit Comment
             $(document).off('submit', "form[id^='commentForm']").on('submit', "form[id^='commentForm']",
                 function(e) {
                     const formData = $(this).serialize();
@@ -242,13 +242,13 @@
                         }
                     });
                 });
-
+            //Reply Modal
             $(document).off('click', '.replyBtn').on('click', '.replyBtn', function() {
                 const commentId = $(this).data('comment-id');
                 const modal = $(`#replyCommentModal_${commentId}`)[0];
                 modal.showModal();
-
             });
+            //Submit Reply
             $(document).off('submit', "form[id^='replyForm_']").on('submit', "form[id^='replyForm_']",
                 function(e) {
                     const formData = $(this).serialize();
@@ -256,7 +256,7 @@
                     const commentId = formDataObj.get('parentId');
                     const modal = $(`#replyCommentModal_${commentId}`)[0];
                     e.preventDefault();
-                    modal.close()
+                    modal.close();
                     $.ajax({
                         url: `/api/comment`,
                         type: 'POST',
@@ -271,7 +271,29 @@
                         }
                     });
                 });
-
+            // Delete Modal
+            $(document).off('click', '.deleteCommentModalBtn').on('click', '.deleteCommentModalBtn', function() {
+                const commentId = $(this).data('comment-id');
+                const modal = $(`#deleteCommentModal_${commentId}`)[0];
+                modal.showModal();
+            });
+            // Delete Comment
+            $(document).off('click', '.deleteCommentBtn').on('click', '.deleteCommentBtn', function() {
+                const commentId = $(this).data('comment-id');
+                const modal = $(`#deleteCommentModal_${commentId}`)[0];
+                $.ajax({
+                    url: `/api/comment/${commentId}`,
+                    type: 'DELETE',
+                    success: function(response) {
+                        modal.close()
+                        loadComments()
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('Error:', error);
+                    }
+                });
+            });
 
         });
     </script>

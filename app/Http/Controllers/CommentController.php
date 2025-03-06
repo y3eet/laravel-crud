@@ -22,14 +22,29 @@ class CommentController extends Controller
         $request->validate([
             'body' => 'required|string|max:255',
         ]); 
-        $comment = Comment::create([
+        Comment::create([
             'user_id' => $request->user()->id,
             'post_id' => $request->postId,
             'parent_id' => $request->parentId,
             'body' => $request->body,
         ]);
 
-        return response()->json([$comment]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Commented Scuccessfully',
+        ]);
+    }
+    public function delete (Request $request, string $id)
+    {
+        $userId = $request->user()->id;
+        Comment::where('user_id', $userId)
+        ->where('id', $id)
+        ->delete();
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Deleted Comment Scuccessfully',
+        ]);
     }
     
         

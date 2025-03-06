@@ -32,16 +32,34 @@
                                 <ul tabindex="0"
                                     class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                                     <li>
-                                        <button class="editModalBtn text-green-500">
+                                        <button class="editCommentModalBtn text-green-500">
                                             Edit
                                         </button>
                                     </li>
                                     <li>
-                                        <button class="deleteModalBtn text-red-500">
+                                        <button data-comment-id="{{ $comment->id }}"
+                                            class="deleteCommentModalBtn text-red-500">
                                             Delete
                                         </button>
                                     </li>
                                 </ul>
+                                {{-- Delete Comment Modal --}}
+                                <dialog id="deleteCommentModal_{{ $comment->id }}" class="modal">
+                                    <div class="modal-box p-8">
+                                        <h2 class="card-title mb-5">Delete Comment</h2>
+                                        <span>Comment ID: {{ $comment->id }}</span>
+                                        <strong>
+                                            <p>Are you sure you want to delete this comment?</p>
+                                        </strong>
+                                        <div class="flex mt-10 justify-end">
+                                            <button data-comment-id="{{ $comment->id }}" type="submit"
+                                                class="btn btn-error deleteCommentBtn">Delete</button>
+                                        </div>
+                                    </div>
+                                    <form method="dialog" class="modal-backdrop">
+                                        <button>close</button>
+                                    </form>
+                                </dialog>
                             </div>
                         </div>
                     @endif
