@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
@@ -35,6 +36,9 @@ Route::prefix('/api')->group(function () {
 
         Route::put('/like/{post}', [LikeController::class, 'like']);
         Route::delete('/like/{post}', [LikeController::class, 'unlike']);
+
+        Route::get('/comment', [CommentController::class, 'index']);
+        Route::post('/comment', [CommentController::class, 'store']);
 
         Route::get('/posts', [PostController::class, 'index'])->name('api.posts.index');
         Route::post('/posts', [PostController::class, 'store'])->name('api.posts.store');

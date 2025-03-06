@@ -1,6 +1,7 @@
 <x-layout>
     <div id="post_{{ $post->id }}" class="mx-auto card bg-base-100 shadow-xl mb-3"
         style="max-width: 900px; width: 100vw">
+        <input type="hidden" value="{{ $post->id }}" id="postId">
         <div class="card-body flex flex-col gap-3">
             <div class="flex gap-3">
                 <div class="avatar placeholder">
@@ -92,10 +93,9 @@
 
             </div>
             <h2 class="card-title" id="title_{{ $post->id }}">{{ $post->title }}</h2>
-            <p  id="content_{{ $post->id }}">{{ $post->content }}</p>
+            <p id="content_{{ $post->id }}">{{ $post->content }}</p>
 
         </div>
-        {{-- Image (Uncomment if needed) --}}
         {{-- <figure>
             <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Post Image" />
         </figure> --}}
@@ -104,36 +104,67 @@
         <div class="card-body flex flex-col gap-3">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                    <x-heart-button post-id="{{ $post->id }}" count="{{ $post->likes_count }}" filled="{{ $post->liked }}" />
+                    <x-heart-button post-id="{{ $post->id }}" count="{{ $post->likes_count }}"
+                        filled="{{ $post->liked }}" />
+                    <button onclick="comment_modal.showModal()" class="btn btn-sm ml-5">Comment</button>
+
+                    <dialog class="modal" id="comment_modal">
+                        <div class="modal-box p-8">
+                            <h2 class="card-title mb-5">Comment</h2>
+                            <div class="max-w-2xl mx-auto">
+                                <form id="commentForm">
+                                    @csrf
+                                    <div class="mb-4">
+                                        <input type="hidden" name="postId" value="{{ $post->id }}">
+                                        <textarea name="body" id="comment" rows="3" class="textarea textarea-bordered w-full" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-full">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                        <form method="dialog" class="modal-backdrop">
+                            <button>close</button>
+                        </form>
+                    </dialog>
                 </div>
             </div>
         </div>
+
+    </div>
+    <div class="mt-5" id="commentSection">
+        <span class="loading loading-infinity loading-lg"></span>
     </div>
 
     <script>
         $(document).ready(function() {
-            
-            function toast (message, variant, time = 3000){
+
+            function toast(message, variant, time = 3000) {
                 $('#toast').removeClass('hidden');
                 $('#toastMessage').text(message)
-                $('#toastVariant').addClass('alert-'+variant)
+                $('#toastVariant').addClass('alert-' + variant)
                 setTimeout(function() {
                     $('.toast').addClass('hidden');
                 }, time);
             }
-            function loadPosts() {
+
+            function loadComments() {
                 $.ajax({
-                    url: '/api/posts',
+                    url: `/api/comment`,
                     type: 'GET',
+                    data: {
+                        postId: Number($("#postId").val())
+                    },
                     success: function(response) {
-                        $('#posts').html(response)
+                        $('#commentSection').html(response)
                     },
                     error: function(xhr, status, error) {
                         console.error('Error:', error);
-                        console.log(xhr.responseText);
+                        alert('Error:', error);
                     }
                 });
             }
+            loadComments()
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -163,7 +194,6 @@
                     }
                 });
             });
-
             $(document).off('click', '.editModalBtn').on('click', '.editModalBtn', function() {
                 const postId = $(this).data('post-id');
                 const modal = $(`#editPostModal_${postId}`)[0];
@@ -193,6 +223,55 @@
                         }
                     });
                 });
+            //Comment Section
+            $(document).off('submit', "form[id^='commentForm']").on('submit', "form[id^='commentForm']",
+                function(e) {
+                    const formData = $(this).serialize();
+                    e.preventDefault();
+                    $.ajax({
+                        url: `/api/comment`,
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            $('#comment_modal').get(0).close();
+                            loadComments()
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            alert('Error:', error);
+                        }
+                    });
+                });
+
+            $(document).off('click', '.replyBtn').on('click', '.replyBtn', function() {
+                const commentId = $(this).data('comment-id');
+                const modal = $(`#replyCommentModal_${commentId}`)[0];
+                modal.showModal();
+
+            });
+            $(document).off('submit', "form[id^='replyForm_']").on('submit', "form[id^='replyForm_']",
+                function(e) {
+                    const formData = $(this).serialize();
+                    const formDataObj = new URLSearchParams(formData);
+                    const commentId = formDataObj.get('parentId');
+                    const modal = $(`#replyCommentModal_${commentId}`)[0];
+                    e.preventDefault();
+                    modal.close()
+                    $.ajax({
+                        url: `/api/comment`,
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            modal.close()
+                            loadComments()
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            alert('Error:', error);
+                        }
+                    });
+                });
+
 
         });
     </script>

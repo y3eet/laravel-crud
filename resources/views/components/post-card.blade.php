@@ -90,7 +90,7 @@
 
         </div>
         <h2 class="card-title" id="title_{{ $post->id }}">{{ $post->title }}</h2>
-            <p  id="content_{{ $post->id }}">{{ $post->content }}</p>
+        <p id="content_{{ $post->id }}">{{ Str::limit($post->content, 255) }}</p>
 
     </div>
     {{-- Image (Uncomment if needed) --}}
@@ -102,7 +102,8 @@
     <div class="card-body flex flex-col gap-3">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <x-heart-button post-id="{{ $post->id }}" count="{{ $post->likes_count }}" filled="{{ $post->liked }}" />
+                <x-heart-button post-id="{{ $post->id }}" count="{{ $post->likes_count }}"
+                    filled="{{ $post->liked }}" />
             </div>
 
             <a class="btn btn-primary" href="/posts/{{ $post->id }}">View</a>
@@ -113,14 +114,15 @@
 
 <script>
     $(document).ready(function() {
-        function toast (message, variant, time = 3000){
+        function toast(message, variant, time = 3000) {
             $('#toast').removeClass('hidden');
             $('#toastMessage').text(message)
-            $('#toastVariant').addClass('alert-'+variant)
+            $('#toastVariant').addClass('alert-' + variant)
             setTimeout(function() {
                 $('.toast').addClass('hidden');
             }, time);
-}
+        }
+
         function loadPosts() {
             $.ajax({
                 url: '/api/posts',
