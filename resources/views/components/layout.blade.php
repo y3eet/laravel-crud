@@ -81,7 +81,6 @@
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>{{ Auth::user()->name }}</div>
                         <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                            <li><a>Profile</a></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST" class="w-full">
                                     @csrf
@@ -106,7 +105,7 @@
     <main>
         <div id="toast" class="toast toast-top toast-end hidden">
             <div id="toastVariant" class="alert">
-              <span id="toastMessage"></span>
+                <span id="toastMessage"></span>
             </div>
         </div>
         <div class="flex flex-col justify-center items-center p-4">
@@ -140,18 +139,6 @@
                 }
             });
         });
-
-
-        // // Handle theme selection
-        // themeList.on('click', 'button', function() {
-        //     const selectedTheme = $(this).data('theme');
-        //     $('html').attr('data-theme', selectedTheme);
-        //     localStorage.setItem('theme', selectedTheme);
-
-        //     // Update active state
-        //     themeList.find('button').removeClass('btn-active');
-        //     $(this).addClass('btn-active');
-        // });
     });
 </script>
 
